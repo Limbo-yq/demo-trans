@@ -1,15 +1,32 @@
 package com.yangqi.example.demotrans.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.yangqi.example.demotrans.model.Order;
+import com.yangqi.example.demotrans.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api/main")
 public class MainController {
 
+    @Autowired
+    private OrderService orderService;
+
     @GetMapping(path = "/hello")
     public String hello(){
         return "Hello World";
     }
+
+    @PostMapping(path = "/order")
+    public void orderGoods(@RequestParam String userName,
+                           @RequestParam Long goodsId) throws Exception{
+        Order order = new Order();
+        order.setUserName(userName);
+        order.setGoodsId(goodsId);
+
+//        orderService.createOrder(order);
+        orderService.createOrderTransInCode(order);
+    }
+
+
 }
