@@ -22,24 +22,37 @@ import javax.jms.ConnectionFactory;
 public class JmsConfig {
     private static final Logger LOG = LoggerFactory.getLogger(JmsConfig.class);
 
-    @Bean
-    public JmsTemplate initJmsTemplate(ConnectionFactory connectionFactory) {
-        LOG.debug("init jms template with converter.");
-        JmsTemplate template = new JmsTemplate();
-        template.setConnectionFactory(connectionFactory); // JmsTemplate使用的connectionFactory跟JmsTransactionManager使用的必须是同一个，不能在这里封装成caching之类的。
-        return template;
-    }
+//    @Bean
+//    public JmsTemplate initJmsTemplate(ConnectionFactory connectionFactory) {
+//        LOG.debug("init jms template with converter.");
+//        JmsTemplate template = new JmsTemplate();
+//        template.setConnectionFactory(connectionFactory); // JmsTemplate使用的connectionFactory跟JmsTransactionManager使用的必须是同一个，不能在这里封装成caching之类的。
+//        return template;
+//    }
 
     // 这个用于设置 @JmsListener使用的containerFactory
+//    @Bean
+//    public JmsListenerContainerFactory<?> msgFactory(ConnectionFactory connectionFactory,
+//                                                     DefaultJmsListenerContainerFactoryConfigurer configurer,
+//                                                     PlatformTransactionManager transactionManager) {
+//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+//        factory.setTransactionManager(transactionManager);
+//        factory.setCacheLevelName("CACHE_CONNECTION");
+//        factory.setReceiveTimeout(100000L);
+//        configurer.configure(factory, connectionFactory);
+//        return factory;
+//    }
+
     @Bean
-    public JmsListenerContainerFactory<?> msgFactory(ConnectionFactory connectionFactory,
-                                                     DefaultJmsListenerContainerFactoryConfigurer configurer,
-                                                     PlatformTransactionManager transactionManager) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+    public DefaultJmsListenerContainerFactory myFactory(ConnectionFactory connectionFactory,
+                                                        DefaultJmsListenerContainerFactoryConfigurer configurer,
+                                                        PlatformTransactionManager transactionManager) {
+        DefaultJmsListenerContainerFactory factory =
+                new DefaultJmsListenerContainerFactory();
         factory.setTransactionManager(transactionManager);
-        factory.setCacheLevelName("CACHE_CONNECTION");
         factory.setReceiveTimeout(100000L);
         configurer.configure(factory, connectionFactory);
+
         return factory;
     }
 
