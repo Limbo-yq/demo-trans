@@ -10,4 +10,16 @@ eureka:
     serviceUrl:
       defaultZone: http://limbo:123456@localhost:8761/eureka/
 
+zuul:
+  routes:
+    userApi:
+      path: /api/customer/**
+      serviceId: user
+      stripPrefix: false
+
+    orderApi:
+      path: /api/order/**
+      serviceId: order
+      stripPrefix: false
+
 
