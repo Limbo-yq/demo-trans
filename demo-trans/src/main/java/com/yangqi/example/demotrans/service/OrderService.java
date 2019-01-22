@@ -48,31 +48,40 @@ public class OrderService {
 
     public void createOrderTransInCode(Order order) throws Exception {
         DefaultTransactionDefinition df = new DefaultTransactionDefinition();
-//        df.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
-//        df.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        df.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
+        df.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus ts = transactionManager.getTransaction(df);
 
         try {
             //生成订单
             orderRepository.save(order);
+            log.info("order create success！");
             //减少库存
             jmsTemplate.convertAndSend("goods:msg:handle", order.getGoodsId());
+            log.info("message send success!");
+//            error();
             transactionManager.commit(ts);
+            log.info("transactionManager commit success!");
         } catch (RuntimeException e) {
             transactionManager.rollback(ts);
             throw e;
         }
     }
 
-    @JmsListener(destination = "goods:msg:handle")
+    private void error() {
+        throw new RuntimeException("some error ...");
+    }
+
+    @JmsListener(destination = "goods:msg:handle", containerFactory = "msgFactory")
     @Transactional
     public void createOrder(String userName) {
         Order order = new Order();
         order.setUserName(userName);
         orderRepository.save(order);
+        error();
     }
 
-    public List<Order> findAll(){
+    public List<Order> findAll() {
         return orderRepository.findAll();
     }
 

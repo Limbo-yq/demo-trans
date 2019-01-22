@@ -28,14 +28,14 @@ public class MainController {
     @Transactional
     public void orderGoods(@RequestParam String userName,
                            @RequestParam Long goodsId) throws Exception{
-//        Order order = new Order();
-//        order.setUserName(userName);
-//        order.setGoodsId(goodsId);
-//
-//        orderService.createOrder(order);
-//        orderService.createOrderTransInCode(order);
+        Order order = new Order();
+        order.setUserName(userName);
+        order.setGoodsId(goodsId);
 
-        jmsTemplate.convertAndSend("goods:msg:handle",userName);
+//        orderService.createOrder(order);
+        orderService.createOrderTransInCode(order);
+
+//        jmsTemplate.convertAndSend("goods:msg:handle",userName);
     }
 
     @GetMapping(path = "/findOrder")

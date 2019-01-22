@@ -9,8 +9,10 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.JmsTransactionManager;
+import org.springframework.jms.connection.SingleConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.jms.ConnectionFactory;
 
@@ -22,43 +24,49 @@ import javax.jms.ConnectionFactory;
 public class JmsConfig {
     private static final Logger LOG = LoggerFactory.getLogger(JmsConfig.class);
 
-//    @Bean
-//    public JmsTemplate initJmsTemplate(ConnectionFactory connectionFactory) {
-//        LOG.debug("init jms template with converter.");
-//        JmsTemplate template = new JmsTemplate();
-//        template.setConnectionFactory(connectionFactory); // JmsTemplate使用的connectionFactory跟JmsTransactionManager使用的必须是同一个，不能在这里封装成caching之类的。
-//        return template;
-//    }
-
-    // 这个用于设置 @JmsListener使用的containerFactory
-//    @Bean
-//    public JmsListenerContainerFactory<?> msgFactory(ConnectionFactory connectionFactory,
-//                                                     DefaultJmsListenerContainerFactoryConfigurer configurer,
-//                                                     PlatformTransactionManager transactionManager) {
-//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-//        factory.setTransactionManager(transactionManager);
-//        factory.setCacheLevelName("CACHE_CONNECTION");
-//        factory.setReceiveTimeout(100000L);
-//        configurer.configure(factory, connectionFactory);
-//        return factory;
-//    }
-
     @Bean
-    public DefaultJmsListenerContainerFactory myFactory(ConnectionFactory connectionFactory,
-                                                        DefaultJmsListenerContainerFactoryConfigurer configurer,
-                                                        PlatformTransactionManager transactionManager) {
-        DefaultJmsListenerContainerFactory factory =
-                new DefaultJmsListenerContainerFactory();
-        factory.setTransactionManager(transactionManager);
-        factory.setReceiveTimeout(100000L);
-        configurer.configure(factory, connectionFactory);
+    public JmsTemplate initJmsTemplate(ConnectionFactory connectionFactory) {
+        LOG.debug("init jms template with converter.");
+        JmsTemplate template = new JmsTemplate();
+        template.setConnectionFactory(connectionFactory); // JmsTemplate使用的connectionFactory跟JmsTransactionManager使用的必须是同一个，不能在这里封装成caching之类的。
+        return template;
+    }
 
+     //这个用于设置 @JmsListener使用的containerFactory
+    @Bean
+    public JmsListenerContainerFactory<?> msgFactory(ConnectionFactory connectionFactory,
+                                                     DefaultJmsListenerContainerFactoryConfigurer configurer,
+                                                     PlatformTransactionManager transactionManager) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setTransactionManager(transactionManager);
+//        factory.setCacheLevelName("CACHE_CONNECTION");
+        factory.setReceiveTimeout(10000L);
+        configurer.configure(factory, connectionFactory);
         return factory;
     }
 
-    @Bean
-    public PlatformTransactionManager transactionManager(ConnectionFactory connectionFactory) {
-        return new JmsTransactionManager(connectionFactory);
-    }
+//    @Bean
+//    public DefaultJmsListenerContainerFactory myFactory(ConnectionFactory connectionFactory,
+//                                                        DefaultJmsListenerContainerFactoryConfigurer configurer) {
+//        DefaultJmsListenerContainerFactory factory =
+//                new DefaultJmsListenerContainerFactory();
+//        factory.setReceiveTimeout(100000L);
+//        configurer.configure(factory, connectionFactory);
+//
+//        return factory;
+//    }
+
+//    @Bean
+//    public PlatformTransactionManager transactionManager(ConnectionFactory connectionFactory) {
+//        JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(connectionFactory);
+//        return ;
+//    }
+
+//    @Bean
+//    public PlatformTransactionManager jmsTransactionManager(ConnectionFactory connectionFactory) {
+//        return new JmsTransactionManager(connectionFactory);
+//    }
+
+
 
 }
