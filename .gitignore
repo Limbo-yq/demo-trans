@@ -4,3 +4,4 @@ demo-trans/.mvn/wrapper/maven-wrapper.properties
 demo/.idea/
 spring-cloud/.idea/
 demo-dtx-db-db/.mvn/
+demo-dtx-jpa-db/.mvn/
